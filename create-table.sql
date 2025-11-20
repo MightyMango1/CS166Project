@@ -13,11 +13,21 @@ CREATE TABLE STAFF (
     SSN INT PRIMARY KEY, -- is this a primary key (?) doesn't show up on the ER diagram
     fname TEXT,
     lname TEXT,
-    position TEXT
-    address TEXT
-    int hotelID
+    position TEXT,
+    address TEXT,
+    int hotelID,
     FOREIGN KEY (hotelID) REFERENCES HOTEL(hotelID) ON DELETE CASCADE
 );
+
+CREATE TABLE MANAGER (
+    SSN INT PRIMARY KEY,
+    FOREIGN KEY (SSN) REFERENCES STAFF(SSN) ON DELETE CASCADE
+); -- just doing subtypes as a reference to staff entity
+
+CREATE TABLE HOUSE_CLEANING (
+    SSN INT PRIMARY KEY,
+    FOREIGN KEY (SSN) REFERENCES STAFF(SSN) ON DELETE CASCADE
+); -- just doing subtypes as a reference to staff entity
 
 CREATE TABLE ROOM (
     roomNo INT,
@@ -58,10 +68,10 @@ CREATE TABLE BOOKING (
 
     customerID INT,
     roomID INT,
-    PRIMARY KEY (customerID, roomID),
+    PRIMARY KEY (customerID, hotelID, roomNo, bookingDate),
     FOREIGN KEY (customerID) REFERENCES CUSTOMER(customerID) ON DELETE CASCADE,
-    FOREIGN KEY (roomID) REFERENCES ROOM(roomNo) ON DELETE CASCADE
-);
+    FOREIGN KEY (hotelID, roomNo) REFERENCES ROOM(hotelID, roomNo) ON DELETE CASCADE
+); --updated the foreign keys here, since that room key is comprosied of roomno and hotelid
 
 CREATE TABLE MAINTENANCE_COMPANY (
     companyID INT PRIMARY KEY,
