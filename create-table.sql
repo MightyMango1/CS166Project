@@ -5,7 +5,7 @@ CREATE TABLE HOTEL (
     hotelID INT PRIMARY KEY,
     name TEXT,
     address TEXT,
-    managerID INT,
+    managerID INT
 );
 
 -- one (hotel) to many (staff) relationship 
@@ -15,7 +15,7 @@ CREATE TABLE STAFF (
     lname TEXT,
     position TEXT,
     address TEXT,
-    int hotelID,
+    hotelID INT,
     FOREIGN KEY (hotelID) REFERENCES HOTEL(hotelID) ON DELETE CASCADE
 );
 
@@ -29,29 +29,43 @@ CREATE TABLE HOUSE_CLEANING (
     FOREIGN KEY (SSN) REFERENCES STAFF(SSN) ON DELETE CASCADE
 ); -- just doing subtypes as a reference to staff entity
 
+CREATE TABLE MAINTENANCE_COMPANY (
+    companyID INT PRIMARY KEY,
+    name TEXT,
+    address TEXT,
+    certified BOOLEAN,
+
+    -- request relationship attributes
+    requestDate DATE,
+    requestDescription TEXT,
+    managerID INT,
+    FOREIGN KEY (managerID) REFERENCES MANAGER(SSN) ON DELETE CASCADE
+);
+
 CREATE TABLE ROOM (
     roomNo INT,
     roomType TEXT,
 
     hotelID INT NOT NULL,
-    PRIMARY KEY (roomNo, hotelId),
-    FOREIGN KEY (hotelId) REFERENCES HOTEL(hotelID) ON DELETE CASCADE,
+    PRIMARY KEY (hotelID, roomNo),
+    FOREIGN KEY (hotelID) REFERENCES HOTEL(hotelID) ON DELETE CASCADE,
 
     -- repair relationship attributes
     repairType TEXT,
-    repairDate DATE
+    repairDate DATE,
     description TEXT,
     companyID INT,
-    FOREIGN KEY (companyID) REFERENCES COMPANY(companyID) ON DELETE CASCADE,
+    FOREIGN KEY (companyID) REFERENCES MAINTENANCE_COMPANY(companyID) ON DELETE CASCADE
 ); --not sure if a room would have multiple repairs, but if it does, we can just add a separate table for repairs and link it to the room with a foreign key. should discuss with professor!
 
 -- assigned junction table for housecleaning and room
 CREATE TABLE ASSIGNED (
-    roomID INT,
+    roomNo INT,
+    hotelID INT,
     houseCleanID INT,
-    PRIMARY KEY (roomID, houseCleanID)
-    FOREIGN KEY (roomID) REFERENCES ROOM(roomID) ON DELETE CASCADE,
-    FOREIGN KEY (houseCleanID) REFERENCES HOUSE_CLEANING(houseCleanID) ON DELETE CASCADE
+    PRIMARY KEY (hotelID, roomNo, houseCleanID),
+    FOREIGN KEY (hotelID, roomNo) REFERENCES ROOM(hotelID, roomNo) ON DELETE CASCADE,
+    FOREIGN KEY (houseCleanID) REFERENCES HOUSE_CLEANING(SSN) ON DELETE CASCADE
 );
 
 CREATE TABLE CUSTOMER (
@@ -61,7 +75,7 @@ CREATE TABLE CUSTOMER (
     gender TEXT,
     address TEXT,
     phNo TEXT,
-    DOB DATE,
+    DOB DATE
 );
 
 -- many (customer) to many (room) relationship junction table
@@ -69,33 +83,14 @@ CREATE TABLE BOOKING (
     bookingDate DATE,
     numPeople INT,
     price INT,
+    hotelID INT,
 
     customerID INT,
-    roomID INT,
+    roomNo INT,
     PRIMARY KEY (customerID, hotelID, roomNo, bookingDate),
     FOREIGN KEY (customerID) REFERENCES CUSTOMER(customerID) ON DELETE CASCADE,
     FOREIGN KEY (hotelID, roomNo) REFERENCES ROOM(hotelID, roomNo) ON DELETE CASCADE
 ); --updated the foreign keys here, since that room key is comprosied of roomno and hotelid
-
-CREATE TABLE MAINTENANCE_COMPANY (
-    companyID INT PRIMARY KEY,
-    name TEXT, 
-    address TEXT,
-    certified BOOLEAN,
-
-);
-
-
-CREATE TABLE REQUESTS (
-    managerSSN INT,
-    companyID INT,
-    requestDate DATE,
-    description TEXT,
-    PRIMARY KEY (managerSSN, companyID, requestDate),
-    FOREIGN KEY (managerSSN) REFERENCES MANAGER(SSN) ON DELETE CASCADE, 
-    FOREIGN KEY (companyID) REFERENCES MAINTENANCE_COMPANY(companyID) ON DELETE CASCADE
-);
-
 --any single maintenance company could be handling multiple requests. so i think we should have
 --a separate table since if we make it part of the maintenance company table, we would
 --have dupes of the company instance for each request they're handling if that makes sense
