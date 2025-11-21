@@ -4,8 +4,8 @@ DROP TABLE IF EXISTS ... CASCADE;
 CREATE TABLE HOTEL (
     hotelID INT PRIMARY KEY,
     name TEXT,
-    address TEXT
-
+    address TEXT,
+    managerID INT,
 );
 
 -- one (hotel) to many (staff) relationship 
@@ -37,17 +37,16 @@ CREATE TABLE ROOM (
     PRIMARY KEY (roomNo, hotelId),
     FOREIGN KEY (hotelId) REFERENCES HOTEL(hotelID) ON DELETE CASCADE,
 
-    companyID INT NOT NULL, -- room must be repaired by one maintenance company
-
-);
-
-CREATE TABLE REPAIR (
-    repairID INT PRIMARY KEY,
-    roomID INT NOT NULL,
+    -- repair relationship attributes
     repairType TEXT,
     repairDate DATE
     description TEXT,
-    FOREIGN KEY (roomID) REFERENCES Room(roomID) -- each repair matches to one room, which in turn matches to one company
+    companyID INT,
+    FOREIGN KEY (companyID) REFERENCES COMPANY(companyID) ON DELETE CASCADE,
+
+    -- assigned relationship
+    managerID INT
+    FOREIGN KEY (managerID) REFERENCES MANAGER(SSN) ON DELETE CASCADE,
 );
 
 CREATE TABLE CUSTOMER (
@@ -78,5 +77,11 @@ CREATE TABLE MAINTENANCE_COMPANY (
     name TEXT, 
     address TEXT,
     certified BOOLEAN,
+
+    -- request relationship attributes
+    requestDate DATE,
+    requestDescription TEXT,
+    managerID INT,
+    FOREIGN KEY (managerID) REFERENCES MANAGER(SSN) ON DELETE CASCADE
 
 );
