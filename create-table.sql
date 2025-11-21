@@ -80,3 +80,13 @@ CREATE TABLE MAINTENANCE_COMPANY (
     certified BOOLEAN,
 
 );
+
+CREATE TABLE REQUESTS (
+    managerSSN INT,
+    companyID INT,
+    requestDate DATE,
+    description TEXT,
+    PRIMARY KEY (managerSSN, companyID, requestDate),
+    FOREIGN KEY (managerSSN) REFERENCES MANAGER(SSN), --relation attribute so assuming we need keys from both sides
+    FOREIGN KEY (companyID) REFERENCES MAINTENANCE_COMPANY(companyID) --relation attribute so assuming we need keys from both sides
+);
