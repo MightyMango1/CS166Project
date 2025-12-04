@@ -187,6 +187,7 @@ public class DBProject {
 				System.out.println("15. Get top k maintenance companies based on repair count");
 				System.out.println("16. Get number of repairs occurred per year for a given hotel room");
 				System.out.println("17. < EXIT");
+            System.out.println("18. List requests for a maintenance company");
 
             switch (readChoice()){
 				   case 1: addCustomer(esql); break;
@@ -206,6 +207,7 @@ public class DBProject {
 				   case 15: topKMaintenanceCompany(esql); break;
 				   case 16: numberOfRepairsForEachRoomPerYear(esql); break;
 				   case 17: keepon = false; break;
+               case 18: repairsGivenCID(esql); break;
 				   default : System.out.println("Unrecognized choice!"); break;
             }//end switch
          }//end while
@@ -269,6 +271,7 @@ public class DBProject {
 
    public static void addMaintenanceCompany(DBProject esql){
       // Given maintenance Company details add the maintenance company in the DB
+
       // ...
       // ...
    }//end addMaintenanceCompany
@@ -306,25 +309,40 @@ public class DBProject {
       // Your code goes here.
       // ...
       // ...
-
-String query = "SELECT count(*) FROM Room WHERE hotelID = ";
+   try {
+   String query = "SELECT * FROM Room WHERE hotelID = ";
          System.out.print("\tEnter hotelID: $");
          String input = in.readLine();
          query += input;
 
          int rowCount = esql.executeQuery(query);
          System.out.println ("Number of rooms for hotel " + input + " is "  + rowCount);
-      }catch(Exception e){
+      } catch(Exception e){
          System.err.println (e.getMessage());
       }
-
-
-
    }//end numberOfAvailableRooms
    
    public static void numberOfBookedRooms(DBProject esql){
 	  // Given a hotelID, get the count of rooms booked
       // Your code goes here.
+      try{
+         System.out.print("\tEnter hotel ID: ");
+         String hid = in.readLine();
+
+         System.out.print("\tEnter date (YYYY-MM-DD): ");
+         String date = in.readLine();
+
+         String query =
+            "SELECT DISTINCT roomNo " +
+            "FROM Booking " +
+            "WHERE hotelID = " + hid + " AND bookingDate = '" + date + "'";
+
+         int rowCount = esql.executeQuery(query);
+         System.out.println("Number of booked rooms on " + date +
+                            " for hotel " + hid + " is: " + rowCount);
+      }catch(Exception e){
+         System.err.println(e.getMessage());
+      }
       // ...
       // ...
    }//end numberOfBookedRooms
@@ -332,6 +350,25 @@ String query = "SELECT count(*) FROM Room WHERE hotelID = ";
    public static void listHotelRoomBookingsForAWeek(DBProject esql){
 	  // Given a hotelID, date - list all the rooms booked for a week(including the input date) 
       // Your code goes here.
+      try {
+         //read user input
+         System.out.print("\tEnter hotel ID: ");
+         String hid = in.readLine();
+         System.out.print("\tEnter start date (YYYY-MM-DD): ");
+         String date = in.readLine();
+         //add input to query skeleton
+         String query =
+            "SELECT hotelID, roomNo, bookingDate, customer, price " +
+            "FROM Booking " +
+            "WHERE hotelID = " + hid + " " +
+            "AND bookingDate BETWEEN '" + date + "'::date AND ('" + date + "'::date + 6) " +
+            "ORDER BY bookingDate, roomNo";
+         //execute query, printing the results
+         int rowCount = esql.executeQuery(query);
+         System.out.println("Total bookings for the week: " + rowCount);
+      } catch(Exception e){
+         System.err.println(e.getMessage());
+      }
       // ...
       // ...
    }//end listHotelRoomBookingsForAWeek
@@ -339,6 +376,27 @@ String query = "SELECT count(*) FROM Room WHERE hotelID = ";
    public static void topKHighestRoomPriceForADateRange(DBProject esql){
 	  // List Top K Rooms with the highest price for a given date range
       // Your code goes here.
+      try{
+         //read user input
+         System.out.print("\tEnter start date (YYYY-MM-DD): ");
+         String startDate = in.readLine();
+         System.out.print("\tEnter end date (YYYY-MM-DD): ");
+         String endDate = in.readLine();
+         System.out.print("\tEnter K: ");
+         String k = in.readLine();
+         //add input to query skeleton
+         String query =
+            "SELECT DISTINCT roomNo, hotelID, price " +
+            "FROM Booking " +
+            "WHERE bookingDate BETWEEN '" + startDate + "'::date AND '" + endDate + "'::date " +
+            "ORDER BY price DESC " +
+            "LIMIT " + k;
+         //execute query, printing the results
+         int rowCount = esql.executeQuery(query);
+         System.out.println("Total rooms found: " + rowCount);
+      }catch(Exception e){
+         System.err.println(e.getMessage());
+      }
       // ...
       // ...
    }//end topKHighestRoomPriceForADateRange
@@ -346,6 +404,26 @@ String query = "SELECT count(*) FROM Room WHERE hotelID = ";
    public static void topKHighestPriceBookingsForACustomer(DBProject esql){
 	  // Given a customer Name, List Top K highest booking price for a customer 
       // Your code goes here.
+      try{
+         //read user input
+         System.out.print("\tEnter customer name: ");
+         String customer = in.readLine();
+         System.out.print("\tEnter K: ");
+         String k = in.readLine();
+         //add input to query skeleton
+         String query =
+            "SELECT hotelID, roomNo, bookingDate, price " +
+            "FROM Booking " +
+            "WHERE customer = '" + customer + "' " +
+            "ORDER BY price DESC " +
+            "LIMIT " + k;
+         //execute query, printing the results
+         int rowCount = esql.executeQuery(query);
+         System.out.println("Total bookings found: " + rowCount);}
+      catch(Exception e){
+         System.err.println(e.getMessage());
+      }
+
       // ...
       // ...
    }//end topKHighestPriceBookingsForACustomer
@@ -353,6 +431,30 @@ String query = "SELECT count(*) FROM Room WHERE hotelID = ";
    public static void totalCostForCustomer(DBProject esql){
 	  // Given a hotelID, customer Name and date range get the total cost incurred by the customer
       // Your code goes here.
+      try{
+         //read user input
+         System.out.print("\tEnter hotel ID: ");
+         String hid = in.readLine();
+         System.out.print("\tEnter customer name: ");
+         String customer = in.readLine();
+         System.out.print("\tEnter start date (YYYY-MM-DD): ");
+         String startDate = in.readLine();
+         System.out.print("\tEnter end date (YYYY-MM-DD): ");
+         String endDate = in.readLine();
+         //add input to query skeleton
+         String query =
+            "SELECT SUM(price) " +
+            "FROM Booking " +
+            "WHERE hotelID = " + hid + " " +
+            "AND customer = '" + customer + "' " +
+            "AND bookingDate BETWEEN '" + startDate + "'::date AND '" + endDate + "'::date";
+         //execute query, printing the results
+         int rowCount = esql.executeQuery(query);
+         System.out.println("Total cost incurred by " + customer + ": " + rowCount);}
+      catch(Exception e){
+         System.err.println(e.getMessage());
+      }
+
       // ...
       // ...
    }//end totalCostForCustomer
@@ -360,6 +462,22 @@ String query = "SELECT count(*) FROM Room WHERE hotelID = ";
    public static void listRepairsMade(DBProject esql){
 	  // Given a Maintenance company name list all the repairs along with repairType, hotelID and roomNo
       // Your code goes here.
+      try {
+         //read user input
+         System.out.print("\tEnter maintenance company name: ");
+         String company = in.readLine();
+         //add input to query skeleton
+         String query =
+            "SELECT R.repairID, R.repairType, R.hotelID, R.roomNo " +
+            "FROM Repair R, MaintenanceCompany M " +
+            "WHERE M.companyName = '" + company + "' " +
+            "AND R.companyID = M.companyID";
+         int rowCount = esql.executeQuery(query);
+         System.out.println("Total repairs found: " + rowCount);
+      //execute query, printing the results
+      } catch(Exception e){
+         System.err.println(e.getMessage());
+      }
       // ...
       // ...
    }//end listRepairsMade
@@ -367,6 +485,25 @@ String query = "SELECT count(*) FROM Room WHERE hotelID = ";
    public static void topKMaintenanceCompany(DBProject esql){
 	  // List Top K Maintenance Company Names based on total repair count (descending order)
       // Your code goes here.
+      try{
+         //read user input
+         System.out.print("\tEnter number of companies desired: ");
+         String k = in.readLine();
+         //add input to query skeleton
+         String query =
+            "SELECT M.companyName, COUNT(R.repairID) AS repairCount " +
+            "FROM MaintenanceCompany M LEFT JOIN Repair R " +
+            "ON M.companyID = R.companyID " +
+            "GROUP BY M.companyName " +
+            "ORDER BY repairCount DESC " +
+            "LIMIT " + k;
+         //execute query, printing the results
+         int rowCount = esql.executeQuery(query);
+         System.out.println("Total companies found: " + rowCount);
+      }catch(Exception e){
+         System.err.println(e.getMessage());
+      }
+
       // ...
       // ...
    }//end topKMaintenanceCompany
@@ -374,8 +511,47 @@ String query = "SELECT count(*) FROM Room WHERE hotelID = ";
    public static void numberOfRepairsForEachRoomPerYear(DBProject esql){
 	  // Given a hotelID, roomNo, get the count of repairs per year
       // Your code goes here.
+      try{
+         //read user input
+         System.out.print("\tEnter hotel ID: ");
+         String hid = in.readLine();
+         System.out.print("\tEnter room number: ");
+         String roomNo = in.readLine();
+         //add input to query skeleton
+         String query =
+            "SELECT EXTRACT(YEAR FROM R.requestDate) AS repairYear, COUNT(R.repairID) AS repairCount " +
+            "FROM RepairRequest RQ, Repair R " +
+            "WHERE RQ.hotelID = " + hid + " " +
+            "AND RQ.roomNo = " + roomNo + " " +
+            "AND RQ.repairID = R.repairID " +
+            "GROUP BY repairYear " +
+            "ORDER BY repairYear";
+         //execute query, printing the results
+         int rowCount = esql.executeQuery(query);
+         System.out.println("Total years found: " + rowCount);
+      }catch(Exception e){
+         System.err.println(e.getMessage());
+      }
+      
       // ...
       // ...
    }//end listRepairsMade
+
+   public static void repairsGivenCID(DBProject esql) {
+    try {
+        System.out.print("\tEnter maintenance company ID: ");
+        String cmpID = in.readLine();
+
+        String query =
+            "SELECT R.reqID, R.managerID, R.repairID, R.requestDate, R.description " +
+            "FROM Request R INNER JOIN Repair RP ON R.repairID = RP.rID " +
+            "WHERE RP.mCompany = " + cmpID;
+
+        esql.executeQuery(query);
+    } catch (Exception e) {
+        System.err.println(e.getMessage());
+    }
+}//end listRequestsForCompany
+
 
 }//end DBProject
