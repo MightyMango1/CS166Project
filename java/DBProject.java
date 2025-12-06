@@ -255,54 +255,249 @@ public class DBProject {
    }//end readChoice
 
    
-   public static void addCustomer(DBProject esql){
-	  // Given customer details add the customer in the DB 
-      // Your code goes here.
-      // ...
-      // ...
-   }//end addCustomer
+   public static void addCustomer(DBProject esql) {
+    try {
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
-   public static void addRoom(DBProject esql){
-	  // Given room details add the room in the DB
-      // Your code goes here.
-      // ...
-      // ...
-   }//end addRoom
+        System.out.print("\tEnter Customer ID: ");
+        String idString = input.readLine();
+        int id = Integer.parseInt(idString);
 
-   public static void addMaintenanceCompany(DBProject esql){
-      // Given maintenance Company details add the maintenance company in the DB
+        System.out.print("\tEnter First Name: ");
+        String fname = input.readLine();
 
-      // ...
-      // ...
-   }//end addMaintenanceCompany
+        System.out.print("\tEnter Last Name: ");
+        String lname = input.readLine();
 
-   public static void addRepair(DBProject esql){
-	  // Given repair details add repair in the DB
-      // Your code goes here.
-      // ...
-      // ...
-   }//end addRepair
+        System.out.print("\tEnter Address: ");
+        String address = input.readLine();
 
-   public static void bookRoom(DBProject esql){
-	  // Given hotelID, roomNo and customer Name create a booking in the DB 
-      // Your code goes here.
-      // ...
-      // ...
-   }//end bookRoom
+        System.out.print("\tEnter Phone Number (only digits): ");
+        String phoneString = input.readLine();
+        long phone = Long.parseLong(phoneString); 
 
-   public static void assignHouseCleaningToRoom(DBProject esql){
-	  // Given Staff SSN, HotelID, roomNo Assign the staff to the room 
-      // Your code goes here.
-      // ...
-      // ...
-   }//end assignHouseCleaningToRoom
+        System.out.print("\tEnter Gender (M/F): ");
+        String gender = input.readLine();
+
+         // date gets input as a string for psql
+        System.out.print("\tEnter Date of Birth (YYYY-MM-DD): ");
+        String dob = input.readLine(); 
+
+       
+        //create query
+        //use mapping to create query
+        String query = String.format(
+            "INSERT INTO Customer (customerID, fName, lName, Address, phNo, DOB, gender) " +
+            "VALUES (%d, '%s', '%s', '%s', %d, '%s', '%s')", 
+            id, fname, lname, address, phone, dob, gender
+        );
+
+        //run query
+        esql.executeUpdate(query);
+        System.out.println("\tCustomer added");
+
+    } catch (Exception e) {
+        System.err.println(e.getMessage());
+    }
+}
+
+public static void addRoom(DBProject esql) {
+    try {
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.print("\tEnter Hotel ID: ");
+        String idString = input.readLine();
+        int id = Integer.parseInt(idString);
+
+        System.out.print("\tEnter Room Number: ");
+        String roomNoString = input.readLine();
+        int roomNo = Integer.parseInt(roomNoString);
+
+        System.out.print("\tEnter Room Type: ");
+        String type = input.readLine();
+       
+        //create query
+        //use mapping to create query
+        String query = String.format(
+            "INSERT INTO Room (hotelID, roomNo, roomType) " +
+            "VALUES (%d, %d, '%s')", 
+            id, roomNo, type
+        );
+
+        //run query
+        esql.executeUpdate(query);
+        System.out.println("\tRoom added");
+
+    } catch (Exception e) {
+        System.err.println(e.getMessage());
+    }
+}
+
+public static void addMaintenanceCompany(DBProject esql) {
+    try {
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.print("\tEnter Company ID: ");
+        int cmpID = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Company Name: ");
+        String name = input.readLine();
+
+        System.out.print("\tEnter Address: ");
+        String address = input.readLine();
+
+        System.out.print("\tIs Certified? (true/false): ");
+        String isCertified = input.readLine(); 
+
+        String query = String.format(
+            "INSERT INTO MaintenanceCompany (cmpID, name, address, isCertified) VALUES (%d, '%s', '%s', '%s')", 
+            cmpID, name, address, isCertified
+        );
+
+        esql.executeUpdate(query);
+        System.out.println("\tMaintenance Company added successfully!");
+
+    } catch (Exception e) {
+        System.err.println(e.getMessage());
+    }
+}
+
+public static void addRepair(DBProject esql) {
+    try {
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.print("\tEnter Repair ID: ");
+        int rID = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Hotel ID: ");
+        int hotelID = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Room Number: ");
+        int roomNo = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Maintenance Company ID: ");
+        int mCompany = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Repair Date (YYYY-MM-DD): ");
+        String repairDate = input.readLine();
+
+        System.out.print("\tEnter Description: ");
+        String description = input.readLine();
+
+        System.out.print("\tEnter Repair Type: ");
+        String repairType = input.readLine();
+
+        String query = String.format(
+            "INSERT INTO Repair (rID, hotelID, roomNo, mCompany, repairDate, description, repairType) VALUES (%d, %d, %d, %d, '%s', '%s', '%s')", 
+            rID, hotelID, roomNo, mCompany, repairDate, description, repairType
+        );
+
+        esql.executeUpdate(query);
+        System.out.println("\tRepair record added successfully!");
+
+    } catch (Exception e) {
+        System.err.println(e.getMessage());
+    }
+}
+
+public static void bookRoom(DBProject esql) {
+    try {
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.print("\tEnter Booking ID: ");
+        int bID = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Customer ID: ");
+        int customer = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Hotel ID: ");
+        int hotelID = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Room Number: ");
+        int roomNo = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Booking Date (YYYY-MM-DD): ");
+        String bookingDate = input.readLine();
+
+        System.out.print("\tEnter Number of People: ");
+        int noOfPeople = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Price: ");
+        double price = Double.parseDouble(input.readLine());
+
+        String query = String.format(
+            "INSERT INTO Booking (bID, customer, hotelID, roomNo, bookingDate, noOfPeople, price) VALUES (%d, %d, %d, %d, '%s', %d, %.2f)", 
+            bID, customer, hotelID, roomNo, bookingDate, noOfPeople, price
+        );
+
+        esql.executeUpdate(query);
+        System.out.println("\tBooking added successfully!");
+
+    } catch (Exception e) {
+        System.err.println(e.getMessage());
+    }
+}
+
+public static void assignHouseCleaningToRoom(DBProject esql){
+    try {
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.print("\tEnter Assignment ID: ");
+        int asgID = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Staff ID: ");
+        int staffID = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Hotel ID: ");
+        int hotelID = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Room Number: ");
+        int roomNo = Integer.parseInt(input.readLine());
+
+        String query = String.format(
+            "INSERT INTO Assigned (asgID, staffID, hotelID, roomNo) VALUES (%d, %d, %d, %d)", 
+            asgID, staffID, hotelID, roomNo
+        );
+
+        esql.executeUpdate(query);
+        System.out.println("\tAssignment added successfully!");
+
+    } catch (Exception e) {
+        System.err.println(e.getMessage());
+    }
+}
    
-   public static void repairRequest(DBProject esql){
-	  // Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
-      // Your code goes here.
-      // ...
-      // ...
-   }//end repairRequest
+public static void repairRequest(DBProject esql) {
+    try {
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.print("\tEnter Request ID: ");
+        int reqID = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Manager ID: ");
+        int managerID = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Repair ID: ");
+        int repairID = Integer.parseInt(input.readLine());
+
+        System.out.print("\tEnter Request Date (YYYY-MM-DD): ");
+        String requestDate = input.readLine();
+
+        System.out.print("\tEnter Description: ");
+        String description = input.readLine();
+
+        String query = String.format(
+            "INSERT INTO Request (reqID, managerID, repairID, requestDate, description) VALUES (%d, %d, %d, '%s', '%s')", 
+            reqID, managerID, repairID, requestDate, description
+        );
+
+        esql.executeUpdate(query);
+        System.out.println("\tRequest added successfully!");
+
+    } catch (Exception e) {
+        System.err.println(e.getMessage());
+    }
+}
    
    public static void numberOfAvailableRooms(DBProject esql){
 	  // Given a hotelID, get the count of rooms available 
